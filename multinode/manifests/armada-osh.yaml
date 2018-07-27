@@ -1240,17 +1240,6 @@ data:
 schema: armada/ChartGroup/v1
 metadata:
   schema: metadata/Document/v1
-  name: openstack-barbican
-data:
-  description: "Deploy barbican"
-  sequenced: True
-  chart_group:
-    - barbican-rabbitmq
-    - barbican
----
-schema: armada/ChartGroup/v1
-metadata:
-  schema: metadata/Document/v1
   name: prometheus-openstack-exporter
 data:
   description: 'Deploy Prometheus OpenStack exporter'

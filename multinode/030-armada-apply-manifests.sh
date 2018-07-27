@@ -16,7 +16,7 @@
 
 set -xe
 
-manifests="armada-cluster-ingress armada-ceph armada-lma armada-osh"
+manifests="armada-lma armada-osh"
 for manifest in $manifests; do
   echo "Applying $manifest manifest"
   armada apply /tmp/$manifest.yaml
