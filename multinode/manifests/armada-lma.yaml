@@ -338,6 +338,17 @@ data:
   values:
     conf:
       templates:
+        ceph_osd_fluentd:
+          template: "ceph-osd-*"
+          index_patterns: "ceph-osd-*"
+          settings:
+            number_of_shards: 1
+          mappings:
+            ceph_osd_fluentd:
+              properties:
+                log:
+                  type: text
+                  norms: false
         oslo_openstack_fluentd:
           template: "openstack-*"
           index_patterns: "openstack-*"
@@ -366,13 +377,13 @@ data:
                 process_name:
                   type: keyword
                   index: false
-        docker_fluentd:
+        fluent:
           template: "logstash-*"
           index_patterns: "logstash-*"
           settings:
             number_of_shards: 1
           mappings:
-            docker_fluentd:
+            fluent:
               properties:
                 kubernetes:
                   properties:
@@ -422,12 +433,30 @@ data:
             type: forward
             port: "#{ENV['FLUENTD_PORT']}"
             bind: 0.0.0.0
+        - ceph_osd_fluentd:
+            header: match
+            type: elasticsearch
+            user: "#{ENV['ELASTICSEARCH_USERNAME']}"
+            password: "#{ENV['ELASTICSEARCH_PASSWORD']}"
+            expression: "ceph-osd.**"
+            include_tag_key: true
+            host: "#{ENV['ELASTICSEARCH_HOST']}"
+            port: "#{ENV['ELASTICSEARCH_PORT']}"
+            logstash_format: true
+            logstash_prefix: ceph-osd
+            buffer_chunk_limit: 10M
+            buffer_queue_limit: 32
+            flush_interval: 20s
+            max_retry_wait: 300
+            disable_retry_limit: ""
+            num_threads: 8
+            type_name: ceph_osd_fluentd
         - oslo_fluentd:
             header: match
             type: elasticsearch
             user: "#{ENV['ELASTICSEARCH_USERNAME']}"
             password: "#{ENV['ELASTICSEARCH_PASSWORD']}"
-            expression: "openstack.*"
+            expression: "openstack.**"
             include_tag_key: true
             host: "#{ENV['ELASTICSEARCH_HOST']}"
             port: "#{ENV['ELASTICSEARCH_PORT']}"
