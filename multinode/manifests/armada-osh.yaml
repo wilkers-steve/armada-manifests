@@ -205,7 +205,7 @@ data:
     labels:
       release_group: osh-keystone-rabbitmq
   test:
-    enabled: true
+    enabled: false
   install:
     no_hooks: False
   upgrade:
@@ -273,6 +273,89 @@ data:
             release_group: osh-keystone
             component: test
   values:
+    images:
+      tags:
+        bootstrap: docker.io/srwilkers/heat:ocata
+        test: docker.io/kolla/ubuntu-source-rally:4.0.0
+        db_init: docker.io/srwilkers/heat:ocata
+        keystone_db_sync: docker.io/srwilkers/keystone:ocata
+        db_drop: docker.io/srwilkers/heat:ocata
+        ks_user: docker.io/srwilkers/heat:ocata
+        rabbit_init: docker.io/rabbitmq:3.7-management
+        keystone_fernet_setup: docker.io/srwilkers/keystone:ocata
+        keystone_fernet_rotate: docker.io/srwilkers/keystone:ocata
+        keystone_credential_setup: docker.io/srwilkers/keystone:ocata
+        keystone_credential_rotate: docker.io/srwilkers/keystone:ocata
+        keystone_api: docker.io/srwilkers/keystone:ocata
+        keystone_domain_manage: docker.io/srwilkers/keystone:ocata
+        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: docker.io/docker:17.07.0
+    conf:
+      logging:
+        loggers:
+          keys:
+            - root
+            - keystone
+        handlers:
+          keys:
+            - stdout
+            - stderr
+            - "null"
+            - fluent
+        formatters:
+          keys:
+            - context
+            - default
+            - fluent
+        logger_root:
+          level: WARNING
+          handlers: null
+        logger_keystone:
+          level: INFO
+          handlers: fluent
+          qualname: keystone
+        logger_amqp:
+          level: WARNING
+          handlers: stderr
+          qualname: amqp
+        logger_amqplib:
+          level: WARNING
+          handlers: stderr
+          qualname: amqplib
+        logger_eventletwsgi:
+          level: WARNING
+          handlers: stderr
+          qualname: eventlet.wsgi.server
+        logger_sqlalchemy:
+          level: WARNING
+          handlers: stderr
+          qualname: sqlalchemy
+        logger_boto:
+          level: WARNING
+          handlers: stderr
+          qualname: boto
+        handler_null:
+          class: logging.NullHandler
+          formatter: default
+          args: ()
+        handler_stdout:
+          class: StreamHandler
+          args: (sys.stdout,)
+          formatter: context
+        handler_stderr:
+          class: StreamHandler
+          args: (sys.stderr,)
+          formatter: context
+        handler_fluent:
+          class: fluent.handler.FluentHandler
+          args: ('openstack.keystone', 'fluentd-logging.osh-infra', 24224)
+          formatter: fluent
+        formatter_fluent:
+          class: oslo_log.formatters.FluentFormatter
+        formatter_context:
+          class: oslo_log.formatters.ContextFormatter
+        formatter_default:
+          format: "%(message)s"
     endpoints:
       identity:
         name: keystone
@@ -369,7 +452,7 @@ data:
     labels:
       release_group: osh-glance-rabbitmq
   test:
-    enabled: true
+    enabled: false
   install:
     no_hooks: False
   upgrade:
@@ -437,6 +520,89 @@ data:
             release_group: osh-glance
             component: test
   values:
+    images:
+      tags:
+        test: docker.io/kolla/ubuntu-source-rally:4.0.0
+        glance_storage_init: docker.io/port/ceph-config-helper:v1.10.3
+        db_init: docker.io/srwilkers/heat:ocata
+        glance_db_sync: docker.io/srwilkers/glance:ocata
+        db_drop: docker.io/srwilkers/heat:ocata
+        ks_user: docker.io/srwilkers/heat:ocata
+        ks_service: docker.io/srwilkers/heat:ocata
+        ks_endpoints: docker.io/srwilkers/heat:ocata
+        rabbit_init: docker.io/rabbitmq:3.7-management
+        glance_api: docker.io/srwilkers/glance:ocata
+        glance_registry: docker.io/srwilkers/glance:ocata
+        # Bootstrap image requires curl
+        bootstrap: docker.io/srwilkers/heat:ocata
+        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: docker.io/docker:17.07.0
+    conf:
+      logging:
+        loggers:
+          keys:
+            - root
+            - glance
+        handlers:
+          keys:
+            - stdout
+            - stderr
+            - "null"
+            - fluent
+        formatters:
+          keys:
+            - context
+            - default
+            - fluent
+        logger_root:
+          level: WARNING
+          handlers: null
+        logger_glance:
+          level: INFO
+          handlers: fluent
+          qualname: glance
+        logger_amqp:
+          level: WARNING
+          handlers: stderr
+          qualname: amqp
+        logger_amqplib:
+          level: WARNING
+          handlers: stderr
+          qualname: amqplib
+        logger_eventletwsgi:
+          level: WARNING
+          handlers: stderr
+          qualname: eventlet.wsgi.server
+        logger_sqlalchemy:
+          level: WARNING
+          handlers: stderr
+          qualname: sqlalchemy
+        logger_boto:
+          level: WARNING
+          handlers: stderr
+          qualname: boto
+        handler_null:
+          class: logging.NullHandler
+          formatter: default
+          args: ()
+        handler_stdout:
+          class: StreamHandler
+          args: (sys.stdout,)
+          formatter: context
+        handler_stderr:
+          class: StreamHandler
+          args: (sys.stderr,)
+          formatter: context
+        handler_fluent:
+          class: fluent.handler.FluentHandler
+          args: ('openstack.glance', 'fluentd-logging.osh-infra', 24224)
+          formatter: fluent
+        formatter_fluent:
+          class: oslo_log.formatters.FluentFormatter
+        formatter_context:
+          class: oslo_log.formatters.ContextFormatter
+        formatter_default:
+          format: "%(message)s"
     endpoints:
       oslo_cache:
         auth:
@@ -479,7 +645,7 @@ data:
     labels:
       release_group: osh-cinder-rabbitmq
   test:
-    enabled: true
+    enabled: false
   install:
     no_hooks: False
   upgrade:
@@ -547,6 +713,26 @@ data:
             release_group: osh-cinder
             component: test
   values:
+    images:
+      tags:
+        test: docker.io/kolla/ubuntu-source-rally:4.0.0
+        db_init: docker.io/srwilkers/heat:ocata
+        cinder_db_sync: docker.io/srwilkers/cinder:ocata
+        db_drop: docker.io/srwilkers/heat:ocata
+        rabbit_init: docker.io/rabbitmq:3.7-management
+        ks_user: docker.io/srwilkers/heat:ocata
+        ks_service: docker.io/srwilkers/heat:ocata
+        ks_endpoints: docker.io/srwilkers/heat:ocata
+        cinder_api: docker.io/srwilkers/cinder:ocata
+        bootstrap: docker.io/srwilkers/heat:ocata
+        cinder_scheduler: docker.io/srwilkers/cinder:ocata
+        cinder_volume: docker.io/srwilkers/cinder:ocata
+        cinder_volume_usage_audit: docker.io/srwilkers/cinder:ocata
+        cinder_storage_init: docker.io/port/ceph-config-helper:v1.10.3
+        cinder_backup: docker.io/srwilkers/cinder:ocata
+        cinder_backup_storage_init: docker.io/port/ceph-config-helper:v1.10.3
+        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: docker.io/docker:17.07.0
     endpoints:
       oslo_cache:
         auth:
@@ -580,6 +766,71 @@ data:
       cinder:
         DEFAULT:
           backup_driver: cinder.backup.drivers.swift
+      logging:
+        loggers:
+          keys:
+            - root
+            - cinder
+        handlers:
+          keys:
+            - stdout
+            - stderr
+            - "null"
+            - fluent
+        formatters:
+          keys:
+            - context
+            - default
+            - fluent
+        logger_root:
+          level: WARNING
+          handlers: null
+        logger_cinder:
+          level: INFO
+          handlers: fluent
+          qualname: cinder
+        logger_amqp:
+          level: WARNING
+          handlers: stderr
+          qualname: amqp
+        logger_amqplib:
+          level: WARNING
+          handlers: stderr
+          qualname: amqplib
+        logger_eventletwsgi:
+          level: WARNING
+          handlers: stderr
+          qualname: eventlet.wsgi.server
+        logger_sqlalchemy:
+          level: WARNING
+          handlers: stderr
+          qualname: sqlalchemy
+        logger_boto:
+          level: WARNING
+          handlers: stderr
+          qualname: boto
+        handler_null:
+          class: logging.NullHandler
+          formatter: default
+          args: ()
+        handler_stdout:
+          class: StreamHandler
+          args: (sys.stdout,)
+          formatter: context
+        handler_stderr:
+          class: StreamHandler
+          args: (sys.stderr,)
+          formatter: context
+        handler_fluent:
+          class: fluent.handler.FluentHandler
+          args: ('openstack.cinder', 'fluentd-logging.osh-infra', 24224)
+          formatter: fluent
+        formatter_fluent:
+          class: oslo_log.formatters.FluentFormatter
+        formatter_context:
+          class: oslo_log.formatters.ContextFormatter
+        formatter_default:
+          format: "%(message)s"
   source:
     type: local
     location: ${OSH_PATH}
@@ -661,7 +912,7 @@ data:
     labels:
       release_group: osh-nova-rabbitmq
   test:
-    enabled: true
+    enabled: false
   install:
     no_hooks: False
   upgrade:
@@ -752,6 +1003,34 @@ data:
             application: nova
             component: cell-setup
   values:
+    images:
+      tags:
+        bootstrap: docker.io/srwilkers/heat:ocata
+        db_drop: docker.io/srwilkers/heat:ocata
+        db_init: docker.io/srwilkers/heat:ocata
+        dep_check: 'quay.io/stackanetes/kubernetes-entrypoint:v0.3.1'
+        rabbit_init: docker.io/rabbitmq:3.7-management
+        ks_user: docker.io/srwilkers/heat:ocata
+        ks_service: docker.io/srwilkers/heat:ocata
+        ks_endpoints: docker.io/srwilkers/heat:ocata
+        nova_api: docker.io/srwilkers/nova:ocata
+        nova_cell_setup: docker.io/srwilkers/nova:ocata
+        nova_cell_setup_init: docker.io/srwilkers/heat:ocata
+        nova_compute: docker.io/srwilkers/nova:ocata
+        nova_compute_ironic: 'docker.io/kolla/ubuntu-source-nova-compute-ironic:3.0.3'
+        nova_compute_ssh: docker.io/srwilkers/nova:ocata
+        nova_conductor: docker.io/srwilkers/nova:ocata
+        nova_consoleauth: docker.io/srwilkers/nova:ocata
+        nova_db_sync: docker.io/srwilkers/nova:ocata
+        nova_novncproxy: docker.io/srwilkers/nova:ocata
+        nova_novncproxy_assets: 'docker.io/kolla/ubuntu-source-nova-novncproxy:3.0.3'
+        nova_placement: docker.io/srwilkers/nova:ocata
+        nova_scheduler: docker.io/srwilkers/nova:ocata
+        nova_service_cleaner: 'docker.io/port/ceph-config-helper:v1.10.3'
+        nova_spiceproxy: docker.io/srwilkers/nova:ocata
+        nova_spiceproxy_assets: 'docker.io/kolla/ubuntu-source-nova-spicehtml5proxy:3.0.3'
+        test: 'docker.io/kolla/ubuntu-source-rally:4.0.0'
+        image_repo_sync: docker.io/docker:17.07.0
     endpoints:
       identity:
         name: keystone
@@ -813,6 +1092,71 @@ data:
         libvirt:
           virt_type: qemu
           cpu_mode: none
+      logging:
+        loggers:
+          keys:
+            - root
+            - nova
+        handlers:
+          keys:
+            - stdout
+            - stderr
+            - "null"
+            - fluent
+        formatters:
+          keys:
+            - context
+            - default
+            - fluent
+        logger_root:
+          level: WARNING
+          handlers: null
+        logger_nova:
+          level: INFO
+          handlers: fluent
+          qualname: nova
+        logger_amqp:
+          level: WARNING
+          handlers: stderr
+          qualname: amqp
+        logger_amqplib:
+          level: WARNING
+          handlers: stderr
+          qualname: amqplib
+        logger_eventletwsgi:
+          level: WARNING
+          handlers: stderr
+          qualname: eventlet.wsgi.server
+        logger_sqlalchemy:
+          level: WARNING
+          handlers: stderr
+          qualname: sqlalchemy
+        logger_boto:
+          level: WARNING
+          handlers: stderr
+          qualname: boto
+        handler_null:
+          class: logging.NullHandler
+          formatter: default
+          args: ()
+        handler_stdout:
+          class: StreamHandler
+          args: (sys.stdout,)
+          formatter: context
+        handler_stderr:
+          class: StreamHandler
+          args: (sys.stderr,)
+          formatter: context
+        handler_fluent:
+          class: fluent.handler.FluentHandler
+          args: ('openstack.nova', 'fluentd-logging.osh-infra', 24224)
+          formatter: fluent
+        formatter_fluent:
+          class: oslo_log.formatters.FluentFormatter
+        formatter_context:
+          class: oslo_log.formatters.ContextFormatter
+        formatter_default:
+          format: "%(message)s"
   source:
     type: local
     location: ${OSH_PATH}
@@ -834,7 +1178,7 @@ data:
     labels:
       release_group: osh-neutron-rabbitmq
   test:
-    enabled: true
+    enabled: false
   install:
     no_hooks: False
   upgrade:
@@ -909,6 +1253,27 @@ data:
             application: neutron
             component: ks-endpoints
   values:
+    images:
+      tags:
+        bootstrap: docker.io/srwilkers/heat:ocata
+        test: docker.io/kolla/ubuntu-source-rally:4.0.0
+        db_init: docker.io/srwilkers/heat:ocata
+        neutron_db_sync: docker.io/srwilkers/neutron:ocata
+        db_drop: docker.io/srwilkers/heat:ocata
+        rabbit_init: docker.io/rabbitmq:3.7-management
+        ks_user: docker.io/srwilkers/heat:ocata
+        ks_service: docker.io/srwilkers/heat:ocata
+        ks_endpoints: docker.io/srwilkers/heat:ocata
+        neutron_server: docker.io/srwilkers/neutron:ocata
+        neutron_dhcp: docker.io/srwilkers/neutron:ocata
+        neutron_metadata: docker.io/srwilkers/neutron:ocata
+        neutron_l3: docker.io/srwilkers/neutron:ocata
+        neutron_openvswitch_agent: docker.io/srwilkers/neutron:ocata
+        neutron_linuxbridge_agent: docker.io/srwilkers/neutron:ocata
+        neutron_sriov_agent: docker.io/srwilkers/neutron:newton-sriov-1804
+        neutron_sriov_agent_init: docker.io/srwilkers/neutron:newton-sriov-1804
+        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: docker.io/docker:17.07.0
     endpoints:
       oslo_cache:
         auth:
@@ -953,6 +1318,71 @@ data:
       interface:
         tunnel: ${TUNNEL_DEVICE}
     conf:
+      logging:
+        loggers:
+          keys:
+            - root
+            - neutron
+        handlers:
+          keys:
+            - stdout
+            - stderr
+            - "null"
+            - fluent
+        formatters:
+          keys:
+            - context
+            - default
+            - fluent
+        logger_root:
+          level: WARNING
+          handlers: null
+        logger_neutron:
+          level: INFO
+          handlers: fluent
+          qualname: neutron
+        logger_amqp:
+          level: WARNING
+          handlers: stderr
+          qualname: amqp
+        logger_amqplib:
+          level: WARNING
+          handlers: stderr
+          qualname: amqplib
+        logger_eventletwsgi:
+          level: WARNING
+          handlers: stderr
+          qualname: eventlet.wsgi.server
+        logger_sqlalchemy:
+          level: WARNING
+          handlers: stderr
+          qualname: sqlalchemy
+        logger_boto:
+          level: WARNING
+          handlers: stderr
+          qualname: boto
+        handler_null:
+          class: logging.NullHandler
+          formatter: default
+          args: ()
+        handler_stdout:
+          class: StreamHandler
+          args: (sys.stdout,)
+          formatter: context
+        handler_stderr:
+          class: StreamHandler
+          args: (sys.stderr,)
+          formatter: context
+        handler_fluent:
+          class: fluent.handler.FluentHandler
+          args: ('openstack.neutron', 'fluentd-logging.osh-infra', 24224)
+          formatter: fluent
+        formatter_fluent:
+          class: oslo_log.formatters.FluentFormatter
+        formatter_context:
+          class: oslo_log.formatters.ContextFormatter
+        formatter_default:
+          format: "%(message)s"
       neutron:
         DEFAULT:
           l3_ha: True
@@ -990,7 +1420,7 @@ data:
     labels:
       release_group: osh-heat-rabbitmq
   test:
-    enabled: true
+    enabled: false
   install:
     no_hooks: False
   upgrade:
@@ -1058,6 +1488,90 @@ data:
             release_group: osh-heat
             component: test
   values:
+    images:
+      tags:
+        test: docker.io/kolla/ubuntu-source-rally:4.0.0
+        bootstrap: docker.io/srwilkers/heat:ocata
+        db_init: docker.io/srwilkers/heat:ocata
+        heat_db_sync: docker.io/srwilkers/heat:ocata
+        db_drop: docker.io/srwilkers/heat:ocata
+        rabbit_init: docker.io/rabbitmq:3.7-management
+        ks_user: docker.io/srwilkers/heat:ocata
+        ks_service: docker.io/srwilkers/heat:ocata
+        ks_endpoints: docker.io/srwilkers/heat:ocata
+        heat_api: docker.io/srwilkers/heat:ocata
+        heat_cfn: docker.io/srwilkers/heat:ocata
+        heat_cloudwatch: docker.io/srwilkers/heat:ocata
+        heat_engine: docker.io/srwilkers/heat:ocata
+        heat_engine_cleaner: docker.io/srwilkers/heat:ocata
+        dep_check: quay.io/stackanetes/kubernetes-entrypoint:v0.3.1
+        image_repo_sync: docker.io/docker:17.07.0
+    conf:
+      logging:
+        loggers:
+          keys:
+            - root
+            - heat
+        handlers:
+          keys:
+            - stdout
+            - stderr
+            - "null"
+            - fluent
+        formatters:
+          keys:
+            - context
+            - default
+            - fluent
+        logger_root:
+          level: WARNING
+          handlers: null
+        logger_heat:
+          level: INFO
+          handlers: fluent
+          qualname: heat
+        logger_amqp:
+          level: WARNING
+          handlers: stderr
+          qualname: amqp
+        logger_amqplib:
+          level: WARNING
+          handlers: stderr
+          qualname: amqplib
+        logger_eventletwsgi:
+          level: WARNING
+          handlers: stderr
+          qualname: eventlet.wsgi.server
+        logger_sqlalchemy:
+          level: WARNING
+          handlers: stderr
+          qualname: sqlalchemy
+        logger_boto:
+          level: WARNING
+          handlers: stderr
+          qualname: boto
+        handler_null:
+          class: logging.NullHandler
+          formatter: default
+          args: ()
+        handler_stdout:
+          class: StreamHandler
+          args: (sys.stdout,)
+          formatter: context
+        handler_stderr:
+          class: StreamHandler
+          args: (sys.stderr,)
+          formatter: context
+        handler_fluent:
+          class: fluent.handler.FluentHandler
+          args: ('openstack.heat', 'fluentd-logging.osh-infra', 24224)
+          formatter: fluent
+        formatter_fluent:
+          class: oslo_log.formatters.FluentFormatter
+        formatter_context:
+          class: oslo_log.formatters.ContextFormatter
+        formatter_default:
+          format: "%(message)s"
     endpoints:
       oslo_cache:
         hosts:
