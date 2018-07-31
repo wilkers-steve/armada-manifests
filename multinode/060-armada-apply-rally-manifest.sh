@@ -16,8 +16,5 @@
 
 set -xe
 
-manifests="armada-tempest"
-for manifest in $manifests; do
-  echo "Applying $manifest manifest"
-  armada apply /tmp/$manifest.yaml
-done
+echo "Applying armada-rally manifest"
+armada apply /tmp/armada-rally.yaml

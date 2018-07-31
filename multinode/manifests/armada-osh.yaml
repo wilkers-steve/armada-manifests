@@ -50,7 +50,7 @@ data:
         ingress: 2
   source:
     type: local
-    location: ${OSH_PATH}
+    location: ${OSH_INFRA_PATH}
     subpath: ingress
     reference: master
   dependencies:
@@ -186,7 +186,7 @@ data:
         enabled: true
   source:
     type: local
-    location: ${OSH_PATH}
+    location: ${OSH_INFRA_PATH}
     subpath: memcached
     reference: master
   dependencies:
@@ -363,6 +363,7 @@ data:
       oslo_cache:
         auth:
           memcache_secret_key: ${KEYSTONE_AUTHTOKEN_MEMCACHED_SECRET_KEY}
+      oslo_messaging:
         hosts:
          default: keystone-rabbitmq
     labels:
@@ -1631,6 +1632,14 @@ data:
           labels:
             release_group: osh-prometheus-openstack-exporter
   values:
+    endpoints:
+      identity:
+        name: keystone
+        namespace: openstack
+        auth:
+          user:
+            user_domain_name: default
+            project_domain_name: default
     labels:
       node_selector_key: openstack-control-plane
       node_selector_value: enabled

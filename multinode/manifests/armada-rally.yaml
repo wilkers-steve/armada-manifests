@@ -1,0 +1,272 @@
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: helm-toolkit
+data:
+  chart_name: helm-toolkit
+  release: helm-toolkit
+  namespace: helm-toolkit
+  values: {}
+  source:
+    type: local
+    location: ${OSH_INFRA_PATH}
+    subpath: helm-toolkit
+    reference: master
+  dependencies: []
+---
+schema: armada/Chart/v1
+metadata:
+  schema: metadata/Document/v1
+  name: rally
+data:
+  chart_name: rally
+  release: rally
+  namespace: openstack
+  wait:
+    timeout: 1800
+    labels:
+      release_group: osh-rally
+  install:
+    no_hooks: False
+  upgrade:
+    no_hooks: False
+    pre:
+      delete:
+        - type: job
+          labels:
+            release_group: osh-rally
+  values:
+    conf:
+      rally_tasks:
+        integration_task:
+          GlanceImages.create_and_delete_image:
+          - args:
+              image_location: "http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img"
+              container_format: bare
+              disk_format: qcow2
+            runner:
+              type: constant
+              times: 5
+              concurrency: 1
+            context:
+              users:
+                tenants: 1
+                users_per_tenant: 1
+            sla:
+              failure_rate:
+                max: 20
+          NovaServers.boot_and_delete_server:
+          - args:
+              flavor:
+                name: m1.tiny
+              image:
+                name: "Cirros 0.3.5 64-bit"
+              auto_assign_nic: true
+            runner:
+              type: constant
+              times: 5
+              concurrency: 1
+            context:
+              users:
+                tenants: 1
+                users_per_tenant: 1
+              existing_network: {}
+            sla:
+              failure_rate:
+                max: 20
+          NovaServers.boot_server_from_volume_and_delete:
+          - args:
+              flavor:
+                name: m1.tiny
+              image:
+                name: "Cirros 0.3.5 64-bit"
+              volume_size: 10
+              force_delete: false
+              auto_assign_nic: true
+              availability_zone: "nova"
+              create_volume_kwargs:
+                volume_type: "rbd1"
+                availability_zone: "nova"
+            runner:
+              type: constant
+              times: 5
+              concurrency: 1
+            context:
+              users:
+                tenants: 1
+                users_per_tenant: 1
+              existing_network: {}
+            sla:
+              failure_rate:
+                max: 20
+          NovaServers.boot_and_get_console_output:
+          - args:
+              flavor:
+                name: m1.tiny
+              image:
+                name: "Cirros 0.3.5 64-bit"
+              auto_assign_nic: true
+            runner:
+              type: constant
+              times: 5
+              concurrency: 1
+            context:
+              users:
+                tenants: 1
+                users_per_tenant: 1
+              existing_network: {}
+            sla:
+              failure_rate:
+                max: 20
+          NovaServers.boot_and_bounce_server:
+          - args:
+              flavor:
+                name: m1.tiny
+              image:
+                name: "Cirros 0.3.5 64-bit"
+              auto_assign_nic: true
+              force_delete: false
+              actions:
+              - hard_reboot: 1
+              - soft_reboot: 1
+              - stop_start: 1
+            runner:
+              type: constant
+              times: 5
+              concurrency: 1
+            context:
+              users:
+                tenants: 1
+                users_per_tenant: 1
+              existing_network: {}
+            sla:
+              failure_rate:
+                max: 20
+          NovaServers.boot_server_from_volume_and_resize:
+          - args:
+              flavor:
+                name: m1.tiny
+              image:
+                name: "Cirros 0.3.5 64-bit"
+              to_flavor:
+                name: "m1.small"
+              confirm: true
+              volume_size: 1
+              force_delete: false
+              do_delete: true
+              boot_server_kwargs:
+                availability_zone: "nova"
+                auto_assign_nic: true
+              create_volume_kwargs:
+                volume_type: "rbd1"
+                availability_zone: "nova"
+            runner:
+              type: constant
+              times: 5
+              concurrency: 1
+            context:
+              users:
+                tenants: 1
+                users_per_tenant: 1
+              existing_network: {}
+            sla:
+              failure_rate:
+                max: 20
+          NovaKeypair.create_and_list_keypairs:
+          - runner:
+              type: constant
+              times: 5
+              concurrency: 1
+            context:
+              users:
+                tenants: 1
+                users_per_tenant: 1
+            sla:
+              failure_rate:
+                max: 20
+          NeutronSecurityGroup.create_and_list_security_groups:
+          - runner:
+              type: constant
+              times: 5
+              concurrency: 1
+            context:
+              users:
+                tenants: 1
+                users_per_tenant: 1
+            sla:
+              failure_rate:
+                max: 20
+          CinderVolumes.create_and_delete_volume:
+          - args:
+              size: 1
+              image:
+                name: "Cirros 0.3.5 64-bit"
+            runner:
+              type: constant
+              times: 5
+              concurrency: 1
+            context:
+              users:
+                tenants: 1
+                users_per_tenant: 1
+            sla:
+              failure_rate:
+                max: 20
+          CinderVolumes.create_and_attach_volume:
+          - args:
+              size: 10
+              image:
+                name: "Cirros 0.3.5 64-bit"
+              flavor:
+                name: m1.tiny
+              create_volume_params:
+                availability_zone: "nova"
+              create_vm_params:
+                availability_zone: "nova"
+                auto_assign_nic: true
+            runner:
+              type: constant
+              times: 5
+              concurrency: 1
+            context:
+              users:
+                tenants: 1
+                users_per_tenant: 1
+              existing_network: {}
+            sla:
+              failure_rate:
+                max: 20
+
+    enabled_tasks:
+      - integration
+      - cinder
+      - glance
+      - heat
+      - keystone
+      - nova
+  source:
+    type: local
+    location: ${OSH_PATH}
+    subpath: rally
+    reference: master
+  dependencies:
+    - helm-toolkit
+---
+schema: armada/ChartGroup/v1
+metadata:
+  schema: metadata/Document/v1
+  name: openstack-rally
+data:
+  description: "Deploy rally"
+  chart_group:
+    - rally
+---
+schema: armada/Manifest/v1
+metadata:
+  schema: metadata/Document/v1
+  name: rally-manifest
+data:
+  release_prefix: osh
+  chart_groups:
+    - openstack-rally

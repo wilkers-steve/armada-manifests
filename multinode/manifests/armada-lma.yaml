@@ -46,7 +46,7 @@ data:
         ingress: 2
   source:
     type: local
-    location: ${OSH_PATH}
+    location: ${OSH_INFRA_PATH}
     subpath: ingress
     reference: master
   dependencies:
@@ -130,69 +130,6 @@ data:
           labels:
             release_group: osh-infra-osh-infra-ldap
   values:
-    data:
-      sample: |
-        dn: ou=People,dc=cluster,dc=local
-        objectclass: organizationalunit
-        ou: People
-        description: We the People
-        dn: uid=alice,ou=People,dc=cluster,dc=local
-        objectClass: inetOrgPerson
-        objectClass: top
-        objectClass: posixAccount
-        objectClass: shadowAccount
-        objectClass: person
-        sn: Alice
-        cn: alice
-        uid: alice
-        userPassword: {SSHA}+i3t/DLCgLDGaIOAmfeFJ2kDeJWmPUDH
-        description: SHA
-        gidNumber: 1000
-        uidNumber: 1493
-        homeDirectory: /home/alice
-        mail: alice@example.com
-        # NOTE: Password is "password" without quotes
-        dn: uid=bob,ou=People,dc=cluster,dc=local
-        objectClass: inetOrgPerson
-        objectClass: top
-        objectClass: posixAccount
-        objectClass: shadowAccount
-        objectClass: person
-        sn: Bob
-        cn: bob
-        uid: bob
-        userPassword: {SSHA}fCJ5vuW1BQ4/OfOVkkx1qjwi7yHFuGNB
-        description: MD5
-        gidNumber: 1000
-        uidNumber: 5689
-        homeDirectory: /home/bob
-        mail: bob@example.com
-        dn: ou=Groups,dc=cluster,dc=local
-        objectclass: organizationalunit
-        ou: Groups
-        description: We the People
-        dn: cn=cryptography,ou=Groups,dc=cluster,dc=local
-        objectclass: top
-        objectclass: posixGroup
-        gidNumber: 418
-        cn: overwatch
-        description: Cryptography Team
-        memberUID: uid=alice,ou=People,dc=cluster,dc=local
-        memberUID: uid=bob,ou=People,dc=cluster,dc=local
-        dn: cn=blue,ou=Groups,dc=cluster,dc=local
-        objectclass: top
-        objectclass: posixGroup
-        gidNumber: 419
-        cn: blue
-        description: Blue Team
-        memberUID: uid=bob,ou=People,dc=cluster,dc=local
-        dn: cn=red,ou=Groups,dc=cluster,dc=local
-        objectclass: top
-        objectclass: posixGroup
-        gidNumber: 420
-        cn: red
-        description: Red Team
-        memberUID: uid=alice,ou=People,dc=cluster,dc=local
     labels:
       server:
         node_selector_key: openstack-control-plane
@@ -282,13 +219,36 @@ data:
       replicas:
         data: 3
         client: 3
+      resources:
+        enabled: true
+        client:
+          requests:
+            memory: "5Gi"
+            cpu: "1000m"
+          limits:
+            memory: "8Gi"
+            cpu: "2000m"
+        master:
+          requests:
+            memory: "5Gi"
+            cpu: "1000m"
+          limits:
+            memory: "8Gi"
+            cpu: "2000m"
+        data:
+          requests:
+            memory: "5Gi"
+            cpu: "1000m"
+          limits:
+            memory: "8Gi"
+            cpu: "2000m"
     monitoring:
       prometheus:
         enabled: True
     storage:
       elasticsearch:
         requests:
-          storage: 10Gi
+          storage: 100Gi
     conf:
       elasticsearch:
         env:
@@ -488,10 +448,26 @@ data:
             type_name: docker_fluentd
     monitoring:
       prometheus:
-        enabled: True
+        enabled: true
     pod:
       replicas:
         fluentd: 3
+      resources:
+        enabled: true
+        fluentbit:
+          limits:
+            memory: '2048Mi'
+            cpu: '2000m'
+          requests:
+            memory: '256Mi'
+            cpu: '500m'
+        fluentd:
+          limits:
+            memory: '2048Mi'
+            cpu: '2000m'
+          requests:
+            memory: '256Mi'
+            cpu: '500m'
     labels:
       fluentd:
         node_selector_key: openstack-control-plane
@@ -535,6 +511,10 @@ data:
           labels:
             release_group: osh-infra-kibana
   values:
+    network:
+      kibana:
+        node_port:
+          enabled: true
     labels:
       kibana:
         node_selector_key: openstack-control-plane
@@ -590,7 +570,7 @@ data:
         prometheus: 2
     storage:
       requests:
-        storage: 20Gi
+        storage: 250Gi
   source:
     type: local
     location: ${OSH_INFRA_PATH}
@@ -738,6 +718,13 @@ data:
             release_group: osh-infra-grafana
             component: test
   values:
+    network:
+      grafana:
+        node_port:
+          enabled: true
+    pod:
+      replicas:
+        grafana: 1
     endpoints:
       oslo_db:
         namespace: osh-infra
