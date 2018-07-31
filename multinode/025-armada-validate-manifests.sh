@@ -16,7 +16,7 @@
 
 set -xe
 
-manifests="armada-lma armada-osh armada-tempest"
+manifests="armada-cluster-ingress armada-ceph armada-lma armada-osh"
 for manifest in $manifests; do
   echo "Validating $manifest manifest"
   armada validate /tmp/$manifest.yaml
