@@ -603,6 +603,22 @@ data:
     pod:
       replicas:
         fluentd: 3
+      resources:
+        enabled: true
+        fluentbit:
+          limits:
+            memory: '2Gi'
+            cpu: '2000m'
+          requests:
+            memory: '1Gi'
+            cpu: '1000m'
+        fluentd:
+          limits:
+            memory: '2Gi'
+            cpu: '2000m'
+          requests:
+            memory: '1Gi'
+            cpu: '1000m'
     labels:
       fluentd:
         node_selector_key: openstack-control-plane

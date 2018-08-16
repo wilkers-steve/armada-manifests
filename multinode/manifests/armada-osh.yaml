@@ -239,7 +239,7 @@ data:
         node_selector_value: enabled
   source:
     type: local
-    location: ${OSH_PATH}
+    location: ${OSH_INFRA_PATH}
     subpath: rabbitmq
     reference: master
   dependencies:
@@ -487,7 +487,7 @@ data:
         node_selector_value: enabled
   source:
     type: local
-    location: ${OSH_PATH}
+    location: ${OSH_INFRA_PATH}
     subpath: rabbitmq
     reference: master
   dependencies:
@@ -680,7 +680,7 @@ data:
         node_selector_value: enabled
   source:
     type: local
-    location: ${OSH_PATH}
+    location: ${OSH_INFRA_PATH}
     subpath: rabbitmq
     reference: master
   dependencies:
@@ -947,7 +947,7 @@ data:
         node_selector_value: enabled
   source:
     type: local
-    location: ${OSH_PATH}
+    location: ${OSH_INFRA_PATH}
     subpath: rabbitmq
     reference: master
   dependencies:
@@ -1213,7 +1213,7 @@ data:
         node_selector_value: enabled
   source:
     type: local
-    location: ${OSH_PATH}
+    location: ${OSH_INFRA_PATH}
     subpath: rabbitmq
     reference: master
   dependencies:
@@ -1455,7 +1455,7 @@ data:
         node_selector_value: enabled
   source:
     type: local
-    location: ${OSH_PATH}
+    location: ${OSH_INFRA_PATH}
     subpath: rabbitmq
     reference: master
   dependencies:
