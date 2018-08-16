@@ -501,6 +501,24 @@ data:
             disable_retry_limit: ""
             num_threads: 8
             type_name: oslo_openstack_fluentd
+        - ceph_elasticsearch:
+            header: match
+            type: elasticsearch
+            user: "#{ENV['ELASTICSEARCH_USERNAME']}"
+            password: "#{ENV['ELASTICSEARCH_PASSWORD']}"
+            expression: "ceph-**.log"
+            include_tag_key: true
+            host: "#{ENV['ELASTICSEARCH_HOST']}"
+            port: "#{ENV['ELASTICSEARCH_PORT']}"
+            logstash_format: true
+            logstash_prefix: ceph
+            buffer_chunk_limit: 10M
+            buffer_queue_limit: 32
+            flush_interval: 20s
+            max_retry_wait: 300
+            disable_retry_limit: ""
+            num_threads: 8
+            type_name: ceph_logs
         - docker_fluentd_elasticsearch:
             header: match
             type: elasticsearch
@@ -523,6 +541,16 @@ data:
           format: "logger:stdout?json=true"
           level: "info"
       templates:
+        ceph_logs:
+          template: "ceph-*"
+          index_patterns: "ceph-*"
+          settings:
+            number_of_shards: 1
+          mappings:
+            ceph_logs:
+              properties:
+                log:
+                  type: text
         syslog:
           template: "syslog-*"
           index_patterns: "syslog-*"
