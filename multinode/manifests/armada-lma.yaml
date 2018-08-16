@@ -221,6 +221,10 @@ data:
           requests: 50Gi
     conf:
       elasticsearch:
+        config:
+          http:
+            max_content_length: 2gb
+            pipelining: false
         env:
           java_opts: "-Xms4g -Xmx4g"
     pod:
@@ -249,6 +253,7 @@ data:
             cpu: "2000m"
       replicas:
         data: 3
+        client: 5
     monitoring:
       prometheus:
         enabled: True
@@ -476,10 +481,12 @@ data:
             port: "#{ENV['ELASTICSEARCH_PORT']}"
             logstash_format: true
             logstash_prefix: syslog
+            buffer_type: memory
             buffer_chunk_limit: 10M
-            buffer_queue_limit: 32
-            flush_interval: 20s
+            buffer_queue_limit: 512
+            flush_interval: 10
             max_retry_wait: 300
+            request_timeout: 60
             disable_retry_limit: ""
             num_threads: 8
             type_name: syslog
@@ -494,10 +501,12 @@ data:
             port: "#{ENV['ELASTICSEARCH_PORT']}"
             logstash_format: true
             logstash_prefix: openstack
+            buffer_type: memory
             buffer_chunk_limit: 10M
-            buffer_queue_limit: 32
-            flush_interval: 20s
+            buffer_queue_limit: 512
+            flush_interval: 10
             max_retry_wait: 300
+            request_timeout: 60
             disable_retry_limit: ""
             num_threads: 8
             type_name: oslo_openstack_fluentd
@@ -529,10 +538,12 @@ data:
             host: "#{ENV['ELASTICSEARCH_HOST']}"
             port: "#{ENV['ELASTICSEARCH_PORT']}"
             logstash_format: true
+            buffer_type: memory
             buffer_chunk_limit: 10M
-            buffer_queue_limit: 32
-            flush_interval: 20s
+            buffer_queue_limit: 512
+            flush_interval: 10
             max_retry_wait: 300
+            request_timeout: 60
             disable_retry_limit: ""
             num_threads: 8
             type_name: docker_fluentd
@@ -690,6 +701,10 @@ data:
           labels:
             release_group: osh-infra-kibana
   values:
+    network:
+      kibana:
+        node_port:
+          enabled: true
     labels:
       kibana:
         node_selector_key: openstack-control-plane
@@ -731,6 +746,10 @@ data:
             release_group: osh-infra-prometheus
             component: test
   values:
+    network:
+      prometheus:
+        node_port:
+          enabled: true
     storage:
       requests:
         storage: 50Gi
@@ -754,7 +773,7 @@ data:
             memory: "8Gi"
             cpu: "2000m"
           requests:
-            memory: "4GiMi"
+            memory: "4Gi"
             cpu: "1000m"
   source:
     type: local
@@ -938,6 +957,10 @@ data:
             release_group: osh-infra-grafana
             component: test
   values:
+    network:
+      grafana:
+        node_port:
+          enabled: true
     endpoints:
       oslo_db:
         namespace: osh-infra
