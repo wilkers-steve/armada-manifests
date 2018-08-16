@@ -42,17 +42,17 @@ data:
         integration_task:
           GlanceImages.create_and_delete_image:
           - args:
-              image_location: "http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img"
               container_format: bare
               disk_format: qcow2
+              image_location: "http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img"
             runner:
               type: constant
-              times: 5
-              concurrency: 1
+              times: 15
+              concurrency: 3
             context:
               users:
-                tenants: 1
-                users_per_tenant: 1
+                tenants: 2
+                users_per_tenant: 2
             sla:
               failure_rate:
                 max: 20
@@ -61,17 +61,23 @@ data:
               flavor:
                 name: m1.tiny
               image:
-                name: "Cirros 0.3.5 64-bit"
+                name: cirros-0.3.5-x86_64-disk.img
               auto_assign_nic: true
             runner:
               type: constant
-              times: 5
-              concurrency: 1
+              times: 15
+              concurrency: 3
             context:
               users:
-                tenants: 1
-                users_per_tenant: 1
+                tenants: 2
+                users_per_tenant: 2
               existing_network: {}
+              images:
+                image_url: "http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img"
+                image_name: cirros-0.3.5-x86_64-disk.img
+                image_type: qcow2
+                image_container: bare
+                images_per_tenant: 1
             sla:
               failure_rate:
                 max: 20
@@ -80,7 +86,7 @@ data:
               flavor:
                 name: m1.tiny
               image:
-                name: "Cirros 0.3.5 64-bit"
+                name: cirros-0.3.5-x86_64-disk.img
               volume_size: 10
               force_delete: false
               auto_assign_nic: true
@@ -90,13 +96,19 @@ data:
                 availability_zone: "nova"
             runner:
               type: constant
-              times: 5
-              concurrency: 1
+              times: 15
+              concurrency: 3
             context:
               users:
-                tenants: 1
-                users_per_tenant: 1
+                tenants: 2
+                users_per_tenant: 2
               existing_network: {}
+              images:
+                image_url: "http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img"
+                image_name: cirros-0.3.5-x86_64-disk.img
+                image_type: qcow2
+                image_container: bare
+                images_per_tenant: 1
             sla:
               failure_rate:
                 max: 20
@@ -105,17 +117,23 @@ data:
               flavor:
                 name: m1.tiny
               image:
-                name: "Cirros 0.3.5 64-bit"
+                name: cirros-0.3.5-x86_64-disk.img
               auto_assign_nic: true
             runner:
               type: constant
-              times: 5
-              concurrency: 1
+              times: 15
+              concurrency: 3
             context:
               users:
-                tenants: 1
-                users_per_tenant: 1
+                tenants: 2
+                users_per_tenant: 2
               existing_network: {}
+              images:
+                image_url: "http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img"
+                image_name: cirros-0.3.5-x86_64-disk.img
+                image_type: qcow2
+                image_container: bare
+                images_per_tenant: 1
             sla:
               failure_rate:
                 max: 20
@@ -124,7 +142,7 @@ data:
               flavor:
                 name: m1.tiny
               image:
-                name: "Cirros 0.3.5 64-bit"
+                name: cirros-0.3.5-x86_64-disk.img
               auto_assign_nic: true
               force_delete: false
               actions:
@@ -133,13 +151,19 @@ data:
               - stop_start: 1
             runner:
               type: constant
-              times: 5
-              concurrency: 1
+              times: 15
+              concurrency: 3
             context:
               users:
-                tenants: 1
-                users_per_tenant: 1
+                tenants: 2
+                users_per_tenant: 2
               existing_network: {}
+              images:
+                image_url: "http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img"
+                image_name: cirros-0.3.5-x86_64-disk.img
+                image_type: qcow2
+                image_container: bare
+                images_per_tenant: 2
             sla:
               failure_rate:
                 max: 20
@@ -148,7 +172,7 @@ data:
               flavor:
                 name: m1.tiny
               image:
-                name: "Cirros 0.3.5 64-bit"
+                name: cirros-0.3.5-x86_64-disk.img
               to_flavor:
                 name: "m1.small"
               confirm: true
@@ -163,37 +187,43 @@ data:
                 availability_zone: "nova"
             runner:
               type: constant
-              times: 5
-              concurrency: 1
+              times: 15
+              concurrency: 3
             context:
               users:
-                tenants: 1
-                users_per_tenant: 1
+                tenants: 2
+                users_per_tenant: 2
               existing_network: {}
+              images:
+                image_url: "http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img"
+                image_name: cirros-0.3.5-x86_64-disk.img
+                image_type: qcow2
+                image_container: bare
+                images_per_tenant: 2
             sla:
               failure_rate:
                 max: 20
           NovaKeypair.create_and_list_keypairs:
           - runner:
               type: constant
-              times: 5
-              concurrency: 1
+              times: 15
+              concurrency: 3
             context:
               users:
-                tenants: 1
-                users_per_tenant: 1
+                tenants: 2
+                users_per_tenant: 2
             sla:
               failure_rate:
                 max: 20
           NeutronSecurityGroup.create_and_list_security_groups:
           - runner:
               type: constant
-              times: 5
-              concurrency: 1
+              times: 15
+              concurrency: 3
             context:
               users:
-                tenants: 1
-                users_per_tenant: 1
+                tenants: 2
+                users_per_tenant: 2
             sla:
               failure_rate:
                 max: 20
@@ -201,15 +231,21 @@ data:
           - args:
               size: 1
               image:
-                name: "Cirros 0.3.5 64-bit"
+                name: cirros-0.3.5-x86_64-disk.img
             runner:
               type: constant
-              times: 5
-              concurrency: 1
+              times: 15
+              concurrency: 3
             context:
               users:
-                tenants: 1
-                users_per_tenant: 1
+                tenants: 2
+                users_per_tenant: 2
+              images:
+                image_url: "http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img"
+                image_name: cirros-0.3.5-x86_64-disk.img
+                image_type: qcow2
+                image_container: bare
+                images_per_tenant: 2
             sla:
               failure_rate:
                 max: 20
@@ -217,7 +253,7 @@ data:
           - args:
               size: 10
               image:
-                name: "Cirros 0.3.5 64-bit"
+                name: cirros-0.3.5-x86_64-disk.img
               flavor:
                 name: m1.tiny
               create_volume_params:
@@ -227,17 +263,22 @@ data:
                 auto_assign_nic: true
             runner:
               type: constant
-              times: 5
-              concurrency: 1
+              times: 15
+              concurrency: 3
             context:
               users:
-                tenants: 1
-                users_per_tenant: 1
+                tenants: 2
+                users_per_tenant: 2
               existing_network: {}
+              images:
+                image_url: "http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img"
+                image_name: cirros-0.3.5-x86_64-disk.img
+                image_type: qcow2
+                image_container: bare
+                images_per_tenant: 1
             sla:
               failure_rate:
                 max: 20
-
     enabled_tasks:
       - integration
       - cinder

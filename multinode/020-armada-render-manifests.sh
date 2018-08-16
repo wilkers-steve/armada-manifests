@@ -35,6 +35,7 @@ export CEPH_FS_ID="$(cat /tmp/ceph-fs-uuid.txt)"
 export TUNNEL_DEVICE=$(ip -4 route list 0/0 | awk '{ print $5; exit }')
 export OSH_INFRA_PATH
 export OSH_PATH
+export tag='${tag}'
 
 manifests="armada-cluster-ingress armada-ceph armada-lma armada-osh"
 for manifest in $manifests; do
